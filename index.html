@@ -1,6 +1,226 @@
-<html>
-  <head>  </head>
-  <body> 
-    <h1>Private Archive</h1>
-  </body>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Galeri Pribadi</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#fafafa;--card:#fff;--ink:#16161d;--mute:#6b6b7a;--line:#dcdce4;--acc:#5b4bdb;--accink:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0e13;--card:#17171f;--ink:#f0f0f6;--mute:#9a9aae;--line:#2a2a36;--acc:#8b7dff;--accink:#0e0e13}}
+:root[data-theme="dark"]{--bg:#0e0e13;--card:#17171f;--ink:#f0f0f6;--mute:#9a9aae;--line:#2a2a36;--acc:#8b7dff;--accink:#0e0e13}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--card);padding:8px 16px;border-radius:10px;font-weight:600}
+.btn.p{background:var(--acc);border-color:var(--acc);color:var(--accink)}
+input[type=text],input[type=password],textarea{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+[hidden]{display:none!important}
+
+/* landing */
+#gate{min-height:100vh;display:grid;place-items:center;padding:24px}
+.gbox{width:min(420px,100%)}
+.gbox h1{font-size:clamp(2.6rem,10vw,4.2rem);line-height:.95;margin:0 0 14px;font-weight:800;letter-spacing:-.03em}
+.gbox p{color:var(--mute);margin:0 0 22px}
+.row{display:flex;gap:10px}
+#err{color:#d6336c;min-height:1.5em;margin:8px 0 0;font-size:.92rem}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@media(prefers-reduced-motion:reduce){.shake{animation:none}}
+
+/* profile */
+#app{max-width:935px;margin:0 auto;padding:28px 12px 60px}
+.top{display:flex;gap:clamp(20px,7vw,80px);align-items:center;padding:0 12px 28px}
+.av{width:clamp(80px,20vw,150px);aspect-ratio:1;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,var(--acc),#e66fa0);flex:none;border:3px solid var(--bg);outline:2px solid var(--acc)}
+.info{min-width:0}
+.nm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.nm h2{margin:0;font-size:1.4rem;font-weight:600}
+.stats{display:flex;gap:28px;margin:0 0 12px;padding:0;list-style:none}
+.stats b{font-weight:800}
+.bio{white-space:pre-wrap;margin:0;color:var(--ink)}
+.tabs{display:flex;justify-content:center;gap:clamp(20px,8vw,60px);border-top:1px solid var(--line)}
+.tabs button{background:none;border:0;border-top:2px solid transparent;margin-top:-1px;padding:14px 4px;color:var(--mute);font-weight:600}
+.tabs button[aria-selected=true]{color:var(--ink);border-top-color:var(--ink)}
+#grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:3px}
+@media(min-width:700px){#grid{gap:22px}}
+.cell{position:relative;aspect-ratio:1;border:0;padding:0;background:#000;overflow:hidden}
+.cell img,.cell video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;font-size:.72rem;padding:1px 7px;border-radius:6px}
+.empty{text-align:center;color:var(--mute);padding:50px 10px;grid-column:1/-1}
+.empty b{display:block;color:var(--ink);font-size:1.2rem}
+
+/* dialogs */
+dialog{border:0;padding:0;border-radius:14px;color:var(--ink);background:var(--card)}
+dialog::backdrop{background:rgba(0,0,0,.8)}
+#lb{width:min(900px,96vw);background:#000;color:#fff}
+#lb .stage{display:grid;place-items:center;min-height:50vh;max-height:80vh}
+#lb img,#lb video{max-width:100%;max-height:80vh;display:block}
+.bar{display:flex;justify-content:space-between;gap:8px;padding:10px 12px;background:var(--card);color:var(--ink)}
+.nav{position:absolute;top:45%;background:rgba(0,0,0,.55);color:#fff;border:0;width:40px;height:40px;border-radius:50%;font-size:1.3rem}
+#prev{left:8px}#next{right:8px}
+#ed{width:min(420px,94vw);padding:20px}
+#ed label{display:block;margin:12px 0 4px;font-weight:600;font-size:.92rem}
+</style>
+</head>
+<body>
+
+<section id="gate">
+  <form class="gbox" id="gf">
+    <h1>Galeri pribadi</h1>
+    <p>Masukkan password untuk membuka foto dan video.</p>
+    <div class="row">
+      <input type="password" id="pw" placeholder="Password" aria-label="Password" autocomplete="current-password" autofocus>
+      <button class="btn p" type="submit">Buka</button>
+    </div>
+    <p id="err" role="alert"></p>
+  </form>
+</section>
+
+<main id="app" hidden>
+  <div class="top">
+    <img class="av" id="av" alt="Foto profil">
+    <div class="info">
+      <div class="nm">
+        <h2 id="uname">galeri.saya</h2>
+        <button class="btn" id="editBtn">Edit profil</button>
+        <button class="btn p" id="addBtn">Tambah</button>
+        <button class="btn" id="lockBtn">Kunci</button>
+      </div>
+      <ul class="stats">
+        <li><b id="sAll">0</b> postingan</li>
+        <li><b id="sImg">0</b> foto</li>
+        <li><b id="sVid">0</b> video</li>
+      </ul>
+      <p class="bio" id="bio"></p>
+    </div>
+  </div>
+  <div class="tabs" role="tablist">
+    <button role="tab" data-f="all" aria-selected="true">Semua</button>
+    <button role="tab" data-f="image" aria-selected="false">Foto</button>
+    <button role="tab" data-f="video" aria-selected="false">Video</button>
+  </div>
+  <div id="grid"></div>
+  <input type="file" id="file" accept="image/*,video/*" multiple hidden>
+  <input type="file" id="avFile" accept="image/*" hidden>
+</main>
+
+<dialog id="lb">
+  <div class="stage" id="stage"></div>
+  <button class="nav" id="prev" aria-label="Sebelumnya">‹</button>
+  <button class="nav" id="next" aria-label="Berikutnya">›</button>
+  <div class="bar"><span id="cap"></span><span><button class="btn" id="del">Hapus</button> <button class="btn" id="cl">Tutup</button></span></div>
+</dialog>
+
+<dialog id="ed">
+  <form method="dialog" id="ef">
+    <h3 style="margin:0">Edit profil</h3>
+    <label for="eN">Nama pengguna</label><input type="text" id="eN" maxlength="30">
+    <label for="eB">Bio</label><textarea id="eB" rows="3" maxlength="150"></textarea>
+    <button type="button" class="btn" id="chAv" style="margin-top:12px">Ganti foto profil</button>
+    <label for="eP">Password baru (kosongkan jika tidak diganti)</label><input type="password" id="eP" autocomplete="new-password">
+    <div class="row" style="margin-top:16px;justify-content:flex-end"><button type="button" class="btn" id="eX">Batal</button><button class="btn p" id="eS" type="submit">Simpan</button></div>
+  </form>
+</dialog>
+
+<script>
+const $=s=>document.querySelector(s);
+const DEFAULT_HASH="4ba2e3f82803b6760d8a2fd5d193ba90741b31b4dad9fa6c129a3663c5077a46"; // password awal: galeri2026
+const sha=async t=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)))].map(b=>b.toString(16).padStart(2,"0")).join("");
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let items=[],filter="all",cur=-1,db=null,avUrl=null;
+
+/* --- IndexedDB --- */
+function openDB(){return new Promise(res=>{try{const r=indexedDB.open("galeri",1);r.onupgradeneeded=()=>r.result.createObjectStore("media",{keyPath:"id",autoIncrement:true});r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>res()}catch(e){res()}})}
+const tx=(m)=>db.transaction("media",m).objectStore("media");
+const dbAll=()=>new Promise(r=>{if(!db)return r([]);const q=tx("readonly").getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>r([])});
+const dbPut=o=>new Promise(r=>{if(!db)return r(o);const q=tx("readwrite").put(o);q.onsuccess=()=>{o.id=q.result;r(o)};q.onerror=()=>r(o)});
+const dbDel=id=>{if(db)tx("readwrite").delete(id)};
+
+/* --- gate --- */
+$("#gf").onsubmit=async e=>{
+  e.preventDefault();
+  const h=await sha($("#pw").value);
+  if(h===ls.get("pwhash",DEFAULT_HASH)){$("#pw").value="";$("#err").textContent="";unlock()}
+  else{$("#err").textContent="Password salah. Coba lagi.";const g=$("#gf");g.classList.remove("shake");void g.offsetWidth;g.classList.add("shake");$("#pw").select()}
+};
+async function unlock(){
+  $("#gate").hidden=true;$("#app").hidden=false;
+  if(!db){await openDB();const rows=await dbAll();rows.sort((a,b)=>b.t-a.t);items=rows.map(r=>({...r,url:URL.createObjectURL(r.blob)}));loadProfile()}
+  render();
+}
+$("#lockBtn").onclick=()=>{$("#app").hidden=true;$("#gate").hidden=false;$("#pw").focus()};
+
+/* --- profile --- */
+function loadProfile(){
+  $("#uname").textContent=ls.get("uname","galeri.saya");
+  $("#bio").textContent=ls.get("bio","Koleksi foto dan video pribadi.");
+  const a=ls.get("avatar");if(a)$("#av").src=a;else $("#av").removeAttribute("src");
+}
+$("#editBtn").onclick=()=>{$("#eN").value=ls.get("uname","galeri.saya");$("#eB").value=ls.get("bio","Koleksi foto dan video pribadi.");$("#eP").value="";$("#ed").showModal()};
+$("#eX").onclick=()=>$("#ed").close();
+$("#ef").onsubmit=async()=>{
+  ls.set("uname",$("#eN").value.trim()||"galeri.saya");ls.set("bio",$("#eB").value);
+  if($("#eP").value)ls.set("pwhash",await sha($("#eP").value));
+  loadProfile();
+};
+$("#chAv").onclick=()=>$("#avFile").click();
+$("#av").onclick=()=>$("#avFile").click();
+$("#avFile").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const im=new Image(),u=URL.createObjectURL(f);
+  im.onload=()=>{const c=document.createElement("canvas");c.width=c.height=300;const s=Math.min(im.width,im.height);c.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,300,300);ls.set("avatar",c.toDataURL("image/jpeg",.85));loadProfile();URL.revokeObjectURL(u)};
+  im.src=u;e.target.value="";
+};
+
+/* --- media --- */
+$("#addBtn").onclick=()=>$("#file").click();
+$("#file").onchange=async e=>{
+  for(const f of e.target.files){
+    const type=f.type.startsWith("video/")?"video":f.type.startsWith("image/")?"image":null;if(!type)continue;
+    const o=await dbPut({type,name:f.name,blob:f,t:Date.now()});
+    o.url=URL.createObjectURL(f);items.unshift(o);
+  }
+  e.target.value="";render();
+};
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  filter=b.dataset.f;document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));render();
+});
+const shown=()=>items.filter(i=>filter==="all"||i.type===filter);
+function render(){
+  $("#sAll").textContent=items.length;
+  $("#sImg").textContent=items.filter(i=>i.type==="image").length;
+  $("#sVid").textContent=items.filter(i=>i.type==="video").length;
+  const g=$("#grid");g.innerHTML="";const list=shown();
+  if(!list.length){g.innerHTML='<div class="empty"><b>Belum ada postingan</b>Klik “Tambah” untuk mengunggah foto atau video.</div>';return}
+  list.forEach((it,i)=>{
+    const b=document.createElement("button");b.className="cell";b.setAttribute("aria-label","Buka "+it.name);
+    b.innerHTML=it.type==="image"?`<img loading="lazy" alt="" src="${it.url}">`:`<video muted preload="metadata" src="${it.url}#t=0.5"></video><span class="badge">▶ Video</span>`;
+    b.onclick=()=>show(i);g.appendChild(b);
+  });
+}
+
+/* --- lightbox --- */
+function show(i){
+  const l=shown();if(!l.length){$("#lb").close();return}
+  cur=(i+l.length)%l.length;const it=l[cur];
+  $("#stage").innerHTML=it.type==="image"?`<img alt="${it.name.replace(/"/g,"")}" src="${it.url}">`:`<video controls autoplay playsinline src="${it.url}"></video>`;
+  $("#cap").textContent=`${cur+1} / ${l.length}`;
+  if(!$("#lb").open)$("#lb").showModal();
+}
+function closeLb(){$("#stage").innerHTML="";$("#lb").close()}
+$("#prev").onclick=()=>show(cur-1);$("#next").onclick=()=>show(cur+1);$("#cl").onclick=closeLb;
+$("#lb").addEventListener("close",()=>$("#stage").innerHTML="");
+$("#lb").addEventListener("click",e=>{if(e.target.id==="lb"||e.target.id==="stage")closeLb()});
+$("#lb").addEventListener("keydown",e=>{if(e.key==="ArrowLeft")show(cur-1);if(e.key==="ArrowRight")show(cur+1)});
+$("#del").onclick=()=>{
+  const it=shown()[cur];if(!it)return;
+  if($("#del").textContent!=="Yakin hapus?"){$("#del").textContent="Yakin hapus?";setTimeout(()=>$("#del").textContent="Hapus",3000);return}
+  $("#del").textContent="Hapus";
+  dbDel(it.id);URL.revokeObjectURL(it.url);items=items.filter(x=>x!==it);render();show(Math.min(cur,shown().length-1));
+};
+</script>
+</body>
 </html>
