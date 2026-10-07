@@ -1,0 +1,24 @@
+name: Update media list
+on:
+  push:
+    paths: ['media/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build media.json
+        run: |
+          mkdir -p media
+          cd media
+          find . -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.gif' -o -iname '*.webp' -o -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mov' -o -iname '*.m4v' \) \
+            | sed 's|^\./||' | sort -r | jq -R . | jq -s . > ../media.json
+      - name: Commit media.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add media.json
+          git diff --cached --quiet || (git commit -m "Update media.json" && git push)
